@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/images/app-icon.png" alt="Narengi icon" width="128"></p>
+
 # Narengi
 
 **Drag a file. Tap a key. Pick a slice.**
@@ -102,6 +104,7 @@ xcodebuild -project Narengi.xcodeproj -scheme Narengi -destination 'platform=mac
 |---|---|
 | `scripts/setup-vendor.sh` | Fetches `cwebp` and ExifTool, verifying pinned SHA-256 hashes. |
 | `scripts/bundle-ffmpeg.sh` | Makes the self-contained `ffmpeg` (plus its dylibs) the app ships with. |
+| `scripts/make-icon.swift` | Regenerates the app icon set from `assets/fruit.png`. |
 | `scripts/release.sh` | Builds Release, signs the tools and the app, installs to `/Applications`. `--no-install` stops after signing. |
 | `scripts/package-dmg.sh` | Builds the styled `dist/Narengi-v<version>-arm64.dmg` and its `.sha256`. |
 | `scripts/publish-release.sh vX.Y.Z` | Tests, packages, tags, pushes and publishes a GitHub release with the DMG. |

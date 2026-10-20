@@ -54,6 +54,14 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 ditto "$APP" "$STAGE/Narengi.app"
 
+# Volume icon: the app's own icon, built from the asset catalog with iconutil (nothing binary is committed).
+ICONSET="$STAGE-icon/AppIcon.iconset"
+mkdir -p "$ICONSET"
+cp "$ROOT"/Narengi/Assets.xcassets/AppIcon.appiconset/icon_*.png "$ICONSET/"
+VOLICON=()
+if iconutil -c icns "$ICONSET" -o "$STAGE-icon/AppIcon.icns" 2>/dev/null; then VOLICON=(--volicon "$STAGE-icon/AppIcon.icns"); fi
+trap 'rm -rf "$STAGE" "$STAGE-icon"' EXIT
+
 echo "==> Building $NAME.dmg"
 if create-dmg \
     --volname "Narengi" \
@@ -64,6 +72,7 @@ if create-dmg \
     --hide-extension "Narengi.app" \
     --app-drop-link 440 185 \
     --no-internet-enable \
+    ${VOLICON[@]+"${VOLICON[@]}"} \
     "$DMG" "$STAGE"; then
   echo "==> Styled image created"
 else

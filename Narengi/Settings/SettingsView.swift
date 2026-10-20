@@ -303,9 +303,9 @@ private struct AboutTab: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: "chart.pie.fill")
-                .font(.system(size: 54))
-                .foregroundStyle(Theme.accent)
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 84, height: 84)
                 .padding(.bottom, 6)
             Text("Narengi").font(.title.weight(.semibold))
             Text(version).foregroundStyle(.secondary)
