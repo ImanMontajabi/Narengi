@@ -6,7 +6,7 @@ import XCTest
 /// Vision's barcode detector returns nothing on GitHub's virtual-machine runners (no neural engine), which says
 /// nothing about the code. Locally, and on real Macs, these checks always run.
 func skipVisionOnVirtualMachines() throws {
-    if ProcessInfo.processInfo.environment["GITHUB_ACTIONS"] != nil { throw XCTSkip("Vision barcode detection isn't available on virtualised CI runners") }
+    if ProcessInfo.processInfo.environment["NARENGI_CI"] != nil {  // set by the CI workflow (TEST_RUNNER_NARENGI_CI) throw XCTSkip("Vision barcode detection isn't available on virtualised CI runners") }
 }
 
 enum TestSupport {

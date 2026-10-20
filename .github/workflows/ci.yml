@@ -14,6 +14,10 @@ jobs:
     name: Build and test (macOS, arm64)
     runs-on: macos-14
     timeout-minutes: 45
+    env:
+      # xcodebuild forwards TEST_RUNNER_* variables to the test process (as NARENGI_CI); a few Vision-based tests
+      # skip themselves on virtualised runners.
+      TEST_RUNNER_NARENGI_CI: "1"
     steps:
       - uses: actions/checkout@v4
 
