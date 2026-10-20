@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Build output and Xcode
+build/
+DerivedData/
+dist/
+xcuserdata/
+*.xcuserstate
+# Generated from project.yml; run `xcodegen generate` after cloning.
+*.xcodeproj/
+
+# Reference screenshots of the app Narengi is modelled on: never commit them.
+screenshot/
+
+# Downloaded and copied helper tools (ffmpeg and its libraries, cwebp, ExifTool) are not committed.
+# Recreate them with scripts/setup-vendor.sh and scripts/bundle-ffmpeg.sh.
+Narengi/Resources/Vendor/*
+!Narengi/Resources/Vendor/.gitkeep

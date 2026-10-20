@@ -1,0 +1,59 @@
+name: Narengi
+options:
+  bundleIdPrefix: app.narengi
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    ENABLE_APP_SANDBOX: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    LM_SKIP_METADATA_EXTRACTION: YES
+    # The bundled helper tools (ffmpeg, cwebp) are arm64-only, so the app is too.
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: NO
+targets:
+  Narengi:
+    type: application
+    platform: macOS
+    sources:
+      - path: Narengi
+        excludes: ["Resources/Vendor/**"]
+      - path: Narengi/Resources/Vendor
+        type: folder
+        optional: true
+    info:
+      path: Narengi/Info.plist
+      properties:
+        CFBundleName: Narengi
+        CFBundleDisplayName: Narengi
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.utilities
+        NSHumanReadableCopyright: "Narengi"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.narengi.Narengi
+        PRODUCT_NAME: Narengi
+  NarengiTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [Tests/NarengiTests]
+    dependencies:
+      - target: Narengi
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: app.narengi.NarengiTests
+schemes:
+  Narengi:
+    build:
+      targets:
+        Narengi: all
+    test:
+      targets: [NarengiTests]
