@@ -108,9 +108,11 @@ enum MarkupRenderer {
                 context.move(to: tail)
                 context.addLine(to: head)
                 for side in [CGFloat(-1), CGFloat(1)] {
-                    let theta: CGFloat = angle + side * spread
+                    // All in Double, converted once: mixing CGFloat and Double here is ambiguous for older compilers.
+                    let theta = Double(angle) + Double(side) * Double(spread)
+                    let dx = Double(length) * cos(theta), dy = Double(length) * sin(theta)
                     context.move(to: head)
-                    context.addLine(to: CGPoint(x: head.x - length * cos(theta), y: head.y - length * sin(theta)))
+                    context.addLine(to: CGPoint(x: head.x - CGFloat(dx), y: head.y - CGFloat(dy)))
                 }
                 context.strokePath()
             case .pen:

@@ -160,9 +160,11 @@ struct MarkupCanvas: View {
                     var path = Path()
                     path.move(to: tail); path.addLine(to: head)
                     for side in [CGFloat(-1), CGFloat(1)] {
-                        let theta: CGFloat = angle + side * (CGFloat.pi / 7)
+                        // All in Double, converted once: mixing CGFloat and Double here is ambiguous for older compilers.
+                        let theta = Double(angle) + Double(side) * Double.pi / 7
+                        let dx = Double(length) * cos(theta), dy = Double(length) * sin(theta)
                         path.move(to: head)
-                        path.addLine(to: CGPoint(x: head.x - length * cos(theta), y: head.y - length * sin(theta)))
+                        path.addLine(to: CGPoint(x: head.x - CGFloat(dx), y: head.y - CGFloat(dy)))
                     }
                     context.stroke(path, with: .color(color), style: style)
                 case .pen:
