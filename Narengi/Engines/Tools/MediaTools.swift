@@ -180,20 +180,39 @@ extension MediaEngine {
     ) async throws {
         let info = await probe(source)
         if info.video == nil { throw ConversionError.decodeFailed(source.lastPathComponent) }
-        var video: [String]
+        // Candidates in order of preference. VideoToolbox is hardware: it can fail on a Mac without the
+        // hardware (or in a virtual machine), so a failure moves on to the next encoder instead of giving up.
+        var candidates: [[String]] = []
         if env.hasEncoder("hevc_videotoolbox") {
-            video = ["-c:v", "hevc_videotoolbox", "-q:v", String(Int((55 - 20 * strength).rounded()))]
-        } else if env.hasEncoder("libx265") {
-            video = ["-c:v", "libx265", "-preset", "fast", "-crf", String(Int((26 + 8 * strength).rounded()))]
-        } else {
-            video = try h264Arguments(crf: Int((24 + 8 * strength).rounded()))
+            candidates.append(["-c:v", "hevc_videotoolbox", "-q:v", String(Int((55 - 20 * strength).rounded()))])
         }
-        if !video.contains("-pix_fmt") { video += ["-pix_fmt", "yuv420p"] }
-        if format != "MKV", video.contains(where: { $0.contains("hevc") || $0.contains("265") }) { video += ["-tag:v", "hvc1"] }
-        var args = ["-i", source.path, "-map", "0:v:0", "-map", "0:a:0?", "-vf", Self.evenScale] + video
-        args += try audioCodecArguments(for: "MP4", kbps: strength > 0.5 ? 96 : 128)
-        if format != "MKV" { args += ["-movflags", "+faststart"] }
-        try await run(args: args, output: output, duration: info.duration, progress: progress)
+        if env.hasEncoder("libx265") {
+            candidates.append(["-c:v", "libx265", "-preset", "fast", "-crf", String(Int((26 + 8 * strength).rounded()))])
+        }
+        if let h264 = try? h264Arguments(crf: Int((24 + 8 * strength).rounded())) { candidates.append(h264) }
+        guard !candidates.isEmpty else { throw ConversionError.encoderMissing("H.264 video") }
+
+        var lastError: Error?
+        for (index, candidate) in candidates.enumerated() {
+            try Task.checkCancellation()
+            var video = candidate
+            if !video.contains("-pix_fmt") { video += ["-pix_fmt", "yuv420p"] }
+            if format != "MKV", video.contains(where: { $0.contains("hevc") || $0.contains("265") }) { video += ["-tag:v", "hvc1"] }
+            var args = ["-i", source.path, "-map", "0:v:0", "-map", "0:a:0?", "-vf", Self.evenScale] + video
+            args += try audioCodecArguments(for: "MP4", kbps: strength > 0.5 ? 96 : 128)
+            if format != "MKV" { args += ["-movflags", "+faststart"] }
+            do {
+                try await run(args: args, output: output, duration: info.duration, progress: progress)
+                return
+            } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                lastError = error
+                try? FileManager.default.removeItem(at: output)
+                if index < candidates.count - 1 { Log.job.notice("Video encoder failed; trying the next one") }
+            }
+        }
+        throw lastError ?? ConversionError.encoderMissing("video")
     }
 
     // MARK: - Metadata

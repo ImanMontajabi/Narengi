@@ -471,6 +471,7 @@ final class ToolEngineTests: XCTestCase {
     }
 
     func testReadQRFromImageAndPDF() throws {
+        try skipVisionOnVirtualMachines()
         let png = dir.appendingPathComponent("qr.png")
         try TestSupport.write(qrImage("https://example.com/hello"), as: "public.png", to: png)
         let fromImage = try QREngine.scan(file: png, format: "PNG")

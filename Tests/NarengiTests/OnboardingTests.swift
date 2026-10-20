@@ -50,6 +50,7 @@ final class OnboardingTests: XCTestCase {
     }
 
     func testThePracticeFileIsAReadablePictureWithAQRCode() throws {
+        try skipVisionOnVirtualMachines()
         let url = try XCTUnwrap(OnboardingSample.makeFile())
         XCTAssertEqual(url.lastPathComponent, "Narengi Sample.png")
         let info = try XCTUnwrap(TestSupport.info(url))
