@@ -104,12 +104,13 @@ enum MarkupRenderer {
                 guard item.points.count >= 2 else { continue }
                 let tail = point(item.points[0]), head = point(item.points[1])
                 let angle = atan2(head.y - tail.y, head.x - tail.x)
-                let length = max(12, item.width * short * 5), spread = Double.pi / 7
+                let length = max(12, item.width * short * 5), spread = CGFloat.pi / 7
                 context.move(to: tail)
                 context.addLine(to: head)
-                for side in [-1.0, 1.0] {
+                for side in [CGFloat(-1), CGFloat(1)] {
+                    let theta: CGFloat = angle + side * spread
                     context.move(to: head)
-                    context.addLine(to: CGPoint(x: head.x - length * cos(angle + side * spread), y: head.y - length * sin(angle + side * spread)))
+                    context.addLine(to: CGPoint(x: head.x - length * cos(theta), y: head.y - length * sin(theta)))
                 }
                 context.strokePath()
             case .pen:
