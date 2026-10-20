@@ -31,8 +31,8 @@ targets:
       properties:
         CFBundleName: Narengi
         CFBundleDisplayName: Narengi
-        CFBundleShortVersionString: "0.1.0"
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: "0.1.1"
+        CFBundleVersion: "2"
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "Narengi"
