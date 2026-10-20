@@ -42,4 +42,8 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -project Narengi.xcodeproj -scheme Narengi -configuration Debug \
-            -derivedDataPath build -destination 'platform=macOS,arch=arm64' test | tail -n 60
+            -derivedDataPath build -destination 'platform=macOS,arch=arm64' test 2>&1 | tee xcodebuild.log | tail -n 40
+
+      - name: Show what failed
+        if: failure()
+        run: grep -E "error:|Test Case .* failed|\*\* (BUILD|TEST) FAILED" xcodebuild.log | head -60
